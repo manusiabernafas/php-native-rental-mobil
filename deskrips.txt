@@ -1,0 +1,65 @@
+Sistem Rental Mobil berbasis PHP Native dan MySQL yang siap pakai untuk usaha sewa mobil skala kecil sampai menengah. Semua proses inti ada di satu dashboard: data armada, data pelanggan, transaksi sewa dengan atau tanpa sopir, pengembalian mobil dengan denda keterlambatan otomatis, invoice siap cetak, sampai laporan pendapatan per periode.
+
+Kodenya ditulis tanpa framework sehingga mudah dipelajari dan dimodifikasi, cocok untuk tugas kuliah, skripsi, belajar PHP, maupun dipakai langsung oleh pemilik rental yang ingin meninggalkan pencatatan di buku atau Excel. Cukup XAMPP, import satu file SQL, dan aplikasi langsung jalan tanpa perlu Composer atau koneksi internet.
+Cara kerja
+Setiap mobil punya status Tersedia, Disewa, atau Servis. Saat petugas membuat transaksi sewa baru, hanya mobil berstatus Tersedia yang bisa dipilih. Ringkasan biaya (lama sewa x harga per hari + biaya sopir per hari) dihitung otomatis di layar sebelum disimpan, dan sistem mengunci baris mobil di database (transaksi + SELECT FOR UPDATE) sehingga satu mobil tidak bisa tersewa dua kali bersamaan. Setelah disimpan, status mobil berubah menjadi Disewa dan invoice langsung bisa dicetak. Pembayaran bisa DP dulu, sisanya dilunasi saat pengembalian.
+
+Saat mobil dikembalikan, sistem membandingkan tanggal kembali dengan jadwal. Jika terlambat, denda dihitung otomatis dari jumlah hari telat x harga sewa harian x persentase denda yang bisa diatur admin (default 120%). Petugas memilih kondisi mobil: siap disewa lagi atau perlu servis, dan status armada ikut berubah. Dashboard menampilkan mobil yang terlambat kembali, sewa yang sedang berjalan, grafik pendapatan 6 bulan, dan komposisi armada. Halaman laporan menghitung pendapatan, denda, dan piutang per periode, performa tiap mobil, serta bisa diekspor ke CSV (Excel) atau dicetak.
+Fitur
+Login multi-user dengan 2 role: Admin dan Petugas
+Dashboard: mobil tersedia, sewa berjalan, terlambat kembali, pendapatan bulan ini
+Grafik pendapatan 6 bulan terakhir tanpa library tambahan
+Daftar mobil yang terlambat kembali beserta jumlah hari telat
+CRUD Data Mobil lengkap dengan upload foto, transmisi, bahan bakar, dan status (Tersedia/Disewa/Servis)
+CRUD Data Pelanggan dengan validasi NIK 16 digit, No. SIM, dan riwayat sewa per pelanggan
+Transaksi sewa dengan kalkulasi biaya otomatis (harga x hari + biaya sopir)
+Opsi sewa dengan sopir, tarif sopir per hari bisa diatur
+Pembayaran DP / lunas dan pelacakan sisa tagihan
+Pengembalian mobil dengan denda keterlambatan otomatis (persentase bisa diatur)
+Pilihan kondisi mobil saat kembali: siap disewa atau masuk servis
+Pembatalan transaksi yang otomatis mengembalikan status mobil
+Invoice rapi dan siap cetak (print-friendly)
+Laporan pendapatan per periode: total, denda, piutang, dan performa per mobil
+Ekspor laporan ke CSV (bisa dibuka di Excel) dan cetak laporan
+Pengaturan profil usaha, tarif sopir, persentase denda, dan manajemen pengguna
+Keamanan: PDO prepared statement, password_hash, proteksi CSRF, validasi upload
+Tampilan bersih dan responsif (desktop, tablet, HP), ikon tersimpan lokal sehingga bisa jalan offline
+Tanpa framework dan tanpa Composer, mudah dipelajari dan dimodifikasi
+Panduan instalasi
+Kebutuhan: PHP 8.0 atau lebih baru dan MySQL/MariaDB. Paling mudah pakai XAMPP atau Laragon.
+
+Ekstrak file ZIP lalu pindahkan folder rental-mobil ke folder web server:
+
+XAMPP: C:\xampp\htdocs\rental-mobil
+Laragon: C:\laragon\www\rental-mobil
+Jalankan Apache dan MySQL dari XAMPP Control Panel.
+
+Buka http://localhost/phpmyadmin, klik tab Import, pilih file database/rental_mobil.sql, lalu klik Import. Database rental_mobil beserta data contohnya akan dibuat otomatis.
+
+Atau lewat terminal:
+
+mysql -u root -p < database/rental_mobil.sql
+Jika user/password MySQL kamu bukan bawaan XAMPP (root tanpa password), sesuaikan file config/database.php:
+
+return [
+    'host'     => 'localhost',
+    'port'     => 3306,
+    'database' => 'rental_mobil',
+    'username' => 'root',
+    'password' => '',
+];
+Buka aplikasi di browser:
+
+http://localhost/rental-mobil
+Login dengan akun demo:
+
+Admin: admin / admin123
+Petugas: petugas / admin123
+Segera ganti password lewat menu Pengaturan setelah login.
+
+Tanpa XAMPP? Bisa juga pakai server bawaan PHP dari dalam folder project:
+
+php -S localhost:8000
+lalu buka http://localhost:8000.
+
+Data contoh yang sudah tersedia: 8 mobil, 5 pelanggan, dan riwayat transaksi 6 bulan terakhir sehingga grafik dan laporan langsung terisi.
